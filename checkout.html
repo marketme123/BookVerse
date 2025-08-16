@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookVerse - Checkout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .checkout-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .order-summary {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .shipping-form {
+            flex: 1.5;
+            min-width: 300px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* Order Summary Styles */
+        #order-items-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-details .title {
+            font-weight: bold;
+        }
+        .item-details .qty {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .total-amount {
+            color: #4ecdc4;
+            font-size: 1.6rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .confirmation-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .confirmation-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .confirmation-box label {
+            font-size: 0.95rem;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        /* Place Order Button */
+        #place-order-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #2ed573, #1dd1a1);
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        #place-order-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(46, 213, 115, 0.4);
+        }
+
+        #place-order-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Empty Cart Message */
+        .empty-cart-message {
+             text-align: center;
+             padding: 50px;
+             font-size: 1.2rem;
+        }
+
+        .empty-cart-message a {
+            color: #4ecdc4;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="logo">📚 BookVerse Checkout</div>
+
+    <div class="container" id="checkout-container">
+        
+        <!-- Order Summary Panel -->
+        <div class="checkout-panel order-summary">
+            <h2>Order Summary</h2>
+            <ul id="order-items-list">
+                <!-- Items will be loaded here by JavaScript -->
+            </ul>
+            <div class="order-total">
+                <span>TOTAL</span>
+                <span class="total-amount" id="order-total-amount">$0.00</span>
+            </div>
+        </div>
+
+        <!-- Shipping Form Panel -->
+        <div class="checkout-panel shipping-form">
+            <h2>Shipping Information</h2>
+            <form id="shipping-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Shipping Address</label>
+                    <textarea id="address" name="address" rows="4" placeholder="Enter your street, city, and zip code" required></textarea>
+                </div>
+                <div class="confirmation-box">
+                    <input type="checkbox" id="confirm-box" name="confirm" required>
+                    <label for="confirm-box">I confirm that my order and shipping details are correct.</label>
+                </div>
+                <button type="button" id="place-order-btn" onclick="placeOrder()" disabled>
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+    </div>
+    
+    <!-- This div will be shown if the cart is empty -->
+    <div class="container" id="empty-cart-container" style="display: none;">
+        <div class="checkout-panel empty-cart-message">
+            <h2>Your Cart is Empty</h2>
+            <p>You have no items to check out. Please add some books to your cart first.</p>
+            <p style="margin-top: 20px;"><a href="bookstore_page (4).html">Return to Store</a></p>
+        </div>
+    </div>
+
+
+    <script>
+        // Get references to DOM elements
+        const nameInput = document.getElementById('name');
+        const addressInput = document.getElementById('address');
+        const confirmCheckbox = document.getElementById('confirm-box');
+        const placeOrderBtn = document.getElementById('place-order-btn');
+
+        // Function to validate the form
+        function validateForm() {
+            const isNameValid = nameInput.value.trim() !== '';
+            const isAddressValid = addressInput.value.trim() !== '';
+            const isConfirmed = confirmCheckbox.checked;
+
+            // Enable the button only if all fields are valid
+            if (isNameValid && isAddressValid && isConfirmed) {
+                placeOrderBtn.disabled = false;
+            } else {
+                placeOrderBtn.disabled = true;
+            }
+        }
+
+        // Add event listeners to form inputs to re-validate on change
+        nameInput.addEventListener('input', validateForm);
+        addressInput.addEventListener('input', validateForm);
+        confirmCheckbox.addEventListener('change', validateForm);
+        
+        // Function to place the order
+        function placeOrder() {
+            // Retrieve checkout data from localStorage
+            const checkoutData = JSON.parse(localStorage.getItem('checkoutData'));
+            if (!checkoutData) {
+                alert("Error: Checkout data not found.");
+                return;
+            }
+
+            // Create the final order object
+            const finalOrderData = {
+                customer: {
+                    name: nameInput.value.trim(),
+                    address: addressInput.value.trim()
+                },
+                order: checkoutData,
+                orderId: 'BV-' + new Date().getTime(), // Generate a simple unique order ID
+                orderDate: new Date().toISOString()
+            };
+
+            // Save the final order details to localStorage for the confirmation page
+            localStorage.setItem('finalOrderData', JSON.stringify(finalOrderData));
+
+            // IMPORTANT: Clear the old cart data to prevent re-ordering
+            localStorage.removeItem('bookCart');
+            localStorage.removeItem('checkoutData');
+            
+            // Open the order confirmation page in a new tab
+            window.open('order-confirmation.html', '_blank');
+
+            // Optionally, redirect the current page back to the store after a delay
+            setTimeout(() => {
+                window.location.href = 'bookstore_page (4).html';
+            }, 1000);
+        }
+
+        // Load order summary when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            const checkoutDataJSON = localStorage.getItem('checkoutData');
+
+            // If there's no data, show the empty cart message
+            if (!checkoutDataJSON) {
+                document.getElementById('checkout-container').style.display = 'none';
+                document.getElementById('empty-cart-container').style.display = 'flex';
+                return;
+            }
+
+            const checkoutData = JSON.parse(checkoutDataJSON);
+            const itemsList = document.getElementById('order-items-list');
+            const totalAmount = document.getElementById('order-total-amount');
+
+            // Populate the order items
+            itemsList.innerHTML = checkoutData.cart.map(item => `
+                <li class="order-item">
+                    <div class="item-details">
+                        <div class="title">${item.title}</div>
+                        <div class="qty">Qty: ${item.quantity}</div>
+                    </div>
+                    <div class="item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                </li>
+            `).join('');
+
+            // Update the total amount
+            totalAmount.textContent = `$${checkoutData.total.toFixed(2)}`;
+        });
+    </script>
+</body>
+</html>
