@@ -208,6 +208,27 @@
         }
 
     </style>
+    <script>
+        // --- Data Layer for Google Tag Manager ---
+        window.dataLayer = window.dataLayer || [];
+        const checkoutDataForDL = JSON.parse(localStorage.getItem('checkoutData'));
+
+        if (checkoutDataForDL && checkoutDataForDL.cart) {
+            window.dataLayer.push({
+                event: 'begin_checkout',
+                ecommerce: {
+                    currency: 'USD',
+                    value: checkoutDataForDL.total,
+                    items: checkoutDataForDL.cart.map(item => ({
+                        item_id: item.title, // Using title as a unique identifier
+                        item_name: item.title,
+                        price: item.price,
+                        quantity: item.quantity
+                    }))
+                }
+            });
+        }
+    </script>
     <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

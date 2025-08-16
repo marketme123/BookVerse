@@ -178,6 +178,30 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
     </style>
+    <script>
+        // --- Data Layer for Google Tag Manager ---
+        window.dataLayer = window.dataLayer || [];
+        const orderDataJSON = localStorage.getItem('finalOrderData');
+
+        if (orderDataJSON) {
+            const orderData = JSON.parse(orderDataJSON);
+
+            window.dataLayer.push({
+                event: 'purchase',
+                ecommerce: {
+                    transaction_id: orderData.orderId,
+                    value: orderData.order.total,
+                    currency: 'USD',
+                    items: orderData.order.cart.map(item => ({
+                        item_id: item.title, // Using title as a unique identifier
+                        item_name: item.title,
+                        price: item.price,
+                        quantity: item.quantity
+                    }))
+                }
+            });
+        }
+    </script>
     <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
